@@ -190,9 +190,10 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   # skip architectures for which we dont have full config parameters
   [ -z "$CANONARCH" ] && continue
 
-  if [ "$OS" = "linux" ] && [ "$CANONCOLOR" = 3 ]; then
-      LIB=${LIB}64
-  fi
+  # Enforce "lib" not "lib64" as library directory/name
+  #if [ "$OS" = "linux" ] && [ "$CANONCOLOR" = 3 ]; then
+  #    LIB=${LIB}64
+  #fi
 
   PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
   [ -d $PPD ] || mkdir -p $PPD
