@@ -2736,6 +2736,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
 	    rpmlog((rc ? RPMLOG_ERR : RPMLOG_WARNING),
 		_("Installed (but unpackaged) file(s) found:\n%s"), t);
+	    fflush(stdout);
 	}
     }
     
