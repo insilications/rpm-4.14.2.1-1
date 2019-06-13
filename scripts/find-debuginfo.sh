@@ -674,3 +674,5 @@ if ((nout > 0)); then
   cat "$LISTFILE" >> "${LISTFILE}.new"
   mv "${LISTFILE}.new" "$LISTFILE"
 fi
+sed -i -e "s|/usr/lib/debug|/usr/share/debug|g" $LISTFILE
+sed -i -e "s|/usr/src/debug|/usr/share/debug/src|g" $LISTFILE
