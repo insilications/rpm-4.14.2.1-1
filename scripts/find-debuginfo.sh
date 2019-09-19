@@ -377,7 +377,6 @@ do_file()
 			      -l "$SOURCEFILE" "$f") || return
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
-    $strict && exit 2
   fi
 
   # Add .gdb_index if requested.
