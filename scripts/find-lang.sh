@@ -109,6 +109,8 @@ if [ -f $MO_NAME ]; then
     rm $MO_NAME
 fi
 
+echo "%defattr(0644,root,root,0755)" > $MO_NAME
+
 for NAME in ${NAMES[@]}; do
 
 find "$TOP_DIR" -type f -o -type l|sed '
