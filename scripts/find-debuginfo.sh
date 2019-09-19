@@ -330,9 +330,11 @@ temp=$(mktemp -d ${TMPDIR:-/tmp}/find-debuginfo.XXXXXX)
 trap 'rm -rf "$temp"' EXIT
 
 # Build a list of unstripped ELF files and their hardlinks
+# (also consider non-static libraries)
 touch "$temp/primary"
 find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
+		     ! -name "*.a" ! -name "ld-*.so" ! -name "ld-linux-x86-64.so*" \
 		     -print |
 file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped.*/\1/p' |
 xargs --no-run-if-empty stat -c '%h %D_%i %n' |
