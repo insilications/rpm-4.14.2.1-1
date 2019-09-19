@@ -237,7 +237,7 @@ strip_to_debug()
   application/x-executable*) g=-g ;;
   application/x-pie-executable*) g=-g ;;
   esac
-  eu-strip --remove-comment $r $g ${keep_remove_args} -f "$1" "$2" || exit
+  eu-strip -p --remove-comment $r $g ${keep_remove_args} -f "$1" "$2" || exit
   chmod 444 "$1" || exit
 }
 

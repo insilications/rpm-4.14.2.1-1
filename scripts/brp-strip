@@ -16,5 +16,5 @@ for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -per
         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
 	grep -v ' shared object,' | \
 	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p'`; do
-	$STRIP -g "$f" || :
+	$STRIP -p -g "$f" || :
 done
