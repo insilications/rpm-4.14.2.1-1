@@ -374,7 +374,7 @@ do_file()
   id=$(${lib_rpm_dir}/debugedit -b "$debug_base_name" -d "$debug_dest_name" \
 			      $no_recompute -i \
 			      ${build_id_seed:+--build-id-seed="$build_id_seed"} \
-			      -l "$SOURCEFILE" "$f") || exit
+			      -l "$SOURCEFILE" "$f") || return
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
     $strict && exit 2
