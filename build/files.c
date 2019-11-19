@@ -46,9 +46,9 @@
  */
 #define BUILD_ID_DIR		"/usr/lib/.build-id"
 #define DEBUG_SRC_DIR		"/usr/src/debug"
-#define DEBUG_LIB_DIR		"/usr/lib/debug"
-#define DEBUG_LIB_PREFIX	"/usr/lib/debug/"
-#define DEBUG_ID_DIR		"/usr/lib/debug/.build-id"
+#define DEBUG_LIB_DIR		"/usr/share/debug"
+#define DEBUG_LIB_PREFIX	"/usr/share/debug/"
+#define DEBUG_ID_DIR		"/usr/share/debug/.build-id"
 #define DEBUG_DWZ_DIR 		"/usr/lib/debug/.dwz"
 
 #undef HASHTYPE
