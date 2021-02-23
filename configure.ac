@@ -957,8 +957,8 @@ AC_ARG_WITH([lua], [AS_HELP_STRING([--with-lua], [build with lua support])],
             [with_lua=yes])
 
 AS_IF([test "$with_lua" != no],[
-  PKG_CHECK_MODULES([LUA],
-    [lua >= 5.1],
+  PKG_CHECK_MODULES_STATIC([LUA],
+    [lua53 >= 5.3],
     [AC_DEFINE(WITH_LUA, 1, [Build with lua support?])],
     [AC_MSG_ERROR([lua not present (--without-lua to disable)])])
   AC_SUBST(LUA_CFLAGS)
