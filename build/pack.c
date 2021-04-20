@@ -656,9 +656,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
 
-	if (cheating) {
-	    (void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
-	}
+// 	if (cheating) {
+// 	    (void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
+// 	}
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
