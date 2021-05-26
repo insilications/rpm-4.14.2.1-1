@@ -171,7 +171,7 @@ endif # LIBDW
 endif # LIBDWARF
 rpmlibexec_PROGRAMS +=	elfdeps
 elfdeps_SOURCES =	tools/elfdeps.c
-elfdeps_LDADD =		rpmio/librpmio.la
+elfdeps_LDADD =		rpmio/librpmio.la lib/librpm.la
 elfdeps_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 
 rpmlibexec_PROGRAMS +=	sepdebugcrcfix

@@ -1,8 +1,9 @@
 <map id="Command Line API." name="Command Line API.">
-<area shape="rect" id="node1" href="$group__header.html" title="How to manipulate package headers (which carries all information about a package). " alt="" coords="371,5,469,32"/>
-<area shape="rect" id="node2" href="$group__rpmbuild.html" title="API for building packages. " alt="" coords="378,56,462,83"/>
-<area shape="rect" id="node4" href="$group__rpmdb.html" title="Opening &amp; accessing the RPM indices using Berkeley DB (the so called rpmdb) " alt="" coords="363,107,477,133"/>
-<area shape="rect" id="node5" href="$group__signature.html" title="List of signature tags. " alt="" coords="347,157,493,184"/>
-<area shape="rect" id="node6" href="$group__rpmrc.html" title="Reading config files and getting some important configuration values. " alt="" coords="385,208,455,235"/>
-<area shape="rect" id="node7" href="$group__io.html" title="I/O" alt="" coords="5,107,45,133"/>
+<area shape="rect" id="node1" href="$group__header.html" title="How to manipulate package headers (which carries all information about a package)." alt="" coords="351,5,444,31"/>
+<area shape="rect" id="node2" href="$group__rpmbuild.html" title="API for building packages." alt="" coords="357,55,437,80"/>
+<area shape="rect" id="node3" title="Parsing RPM command line arguments." alt="" coords="95,104,233,129"/>
+<area shape="rect" id="node4" href="$group__rpmdb.html" title="Opening &amp; accessing the RPM indices using Berkeley DB (the so called rpmdb)" alt="" coords="344,104,451,129"/>
+<area shape="rect" id="node5" href="$group__signature.html" title="List of signature tags." alt="" coords="328,153,467,179"/>
+<area shape="rect" id="node6" href="$group__rpmrc.html" title="Reading config files and getting some important configuration values." alt="" coords="359,203,435,228"/>
+<area shape="rect" id="node7" href="$group__io.html" title=" " alt="" coords="5,104,45,129"/>
 </map>
