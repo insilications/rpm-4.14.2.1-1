@@ -450,7 +450,7 @@ WITH_POPT_LIB=
 AC_CHECK_HEADER([popt.h], [
   AC_CHECK_LIB(popt, poptGetContext, [
       WITH_POPT_INCLUDE=
-      WITH_POPT_LIB="-lpopt"
+      WITH_POPT_LIB="/usr/lib64/libpopt.a"
   ],[
     AC_MSG_ERROR([missing required library popt])
   ])
