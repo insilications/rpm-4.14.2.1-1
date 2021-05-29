@@ -53,19 +53,13 @@ static regex_t **compRegex(const char *pattern) {
   //  printf("newRegexListSize: (regexListSize + 1): (%d + 1) = %d\n",
   //  *regexListSize, newRegexListSize); printf("1\n");
   if (newRegexListSize == 1) {
-    //    printf("2\n");
     regexList = xcalloc(1, (sizeof(*regexList) * 1));
   } else {
-    //    printf("3\n");
     regexList = xrealloc(regexList, (sizeof(*regexList) * newRegexListSize));
   }
-  //  printf("4\n");
   regexList[(newRegexListSize - 1)] = xcalloc(1, sizeof(**regexList));
-  //  printf("5\n");
   regcomp(regexList[(newRegexListSize - 1)], pattern, REG_EXTENDED);
-  //  printf("6\n");
   regexListSize = newRegexListSize;
-  //  printf("7\n");
   //  printf("regexList[%d]: %p\n\n", (regexListSize - 1),
   //         regexList[(regexListSize - 1)]);
   return regexList;
@@ -131,7 +125,7 @@ static const char *mkmarker(GElf_Ehdr *ehdr) {
 }
 
 static void addDep(ARGV_t *deps, const char *soname, const char *ver,
-                   const char *marker) {
+                   const char *marker, int required) {
   char *dep = NULL;
   regex_t *preg = NULL;
   int rc = 0;
@@ -139,27 +133,30 @@ static void addDep(ARGV_t *deps, const char *soname, const char *ver,
   if (skipSoname(soname))
     return;
 
-  //    printf("soname: %s\n", soname);
-  preg = xcalloc(1, sizeof(*preg));
-  rc = regcomp(preg, soname, REG_EXTENDED);
-  if (rc == 0) {
-    for (int i = 0; i < outputLDDSize; ++i) {
-      if (regexec(preg, outputLDD[i], 0, NULL, 0) == 0) {
-        for (int j = 0; j < regexListSize; ++j) {
-          if (regexec(regexList[j], outputLDD[i], 0, NULL, 0) == 0) {
-            printf("Removed: %s\n", soname);
-            goto exit;
+  if (required == 1) {
+    //    printf("soname: %s\n", soname);
+    preg = xcalloc(1, sizeof(*preg));
+    rc = regcomp(preg, soname, REG_EXTENDED);
+    if (rc == 0) {
+      for (int i = 0; i < outputLDDSize; ++i) {
+        if (regexec(preg, outputLDD[i], 0, NULL, 0) == 0) {
+          for (int j = 0; j < regexListSize; ++j) {
+            if (regexec(regexList[j], outputLDD[i], 0, NULL, 0) == 0) {
+              //              printf("Removed: %s\n", soname);
+              goto exit;
+            }
           }
         }
       }
+      //    printf("outputLDDSize: %d\n", outputLDDSize);
+      //    printf("regexListSize: %d\n", regexListSize);
+    } else {
+      char msg[256];
+      (void)regerror(rc, preg, msg, sizeof(msg) - 1);
+      msg[sizeof(msg) - 1] = '\0';
+      printf("%s: regcomp failed: %s\n", soname, msg);
+      goto exit;
     }
-    //    printf("outputLDDSize: %d\n", outputLDDSize);
-    //    printf("regexListSize: %d\n", regexListSize);
-  } else {
-    char msg[256];
-    (void)regerror(rc, preg, msg, sizeof(msg) - 1);
-    msg[sizeof(msg) - 1] = '\0';
-    printf("%s: regcomp failed: %s\n", soname, msg);
   }
 
   if (ver || marker) {
@@ -208,7 +205,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei) {
           auxoffset += aux->vda_next;
           continue;
         } else if (soname && !soname_only && !skipPrivate(s)) {
-          addDep(&ei->provides, soname, s, ei->marker);
+          addDep(&ei->provides, soname, s, ei->marker, 0);
         }
       }
     }
@@ -245,7 +242,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei) {
           break;
 
         if (ei->isExec && soname && !soname_only && !skipPrivate(s)) {
-          addDep(&ei->requires, soname, s, ei->marker);
+          addDep(&ei->requires, soname, s, ei->marker, 1);
         }
         auxoffset += aux->vna_next;
       }
@@ -285,7 +282,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei) {
         if (ei->isExec) {
           s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
           if (s)
-            addDep(&ei->requires, s, NULL, ei->marker);
+            addDep(&ei->requires, s, NULL, ei->marker, 1);
         }
         break;
       }
@@ -358,7 +355,7 @@ static int processFile(const char *fn, int dtype) {
     goto exit;
 
   rasprintf(&lddCMD, "ldd %s", fn);
-  printf("lddCMD: %s\n", lddCMD);
+  //  printf("lddCMD: %s\n", lddCMD);
   fpLDD = popen(lddCMD, "r");
   if (fpLDD != NULL) {
     while (fgets(lddBuffer, PATH_MAX, fpLDD) != NULL) {
@@ -379,43 +376,40 @@ static int processFile(const char *fn, int dtype) {
 
     rpmrcInit = rpmReadConfigFiles(NULL, NULL);
 
-    //        char macrotest[] = "%#%__requires_test";
-    // %__requires_filter
     char *val1 = NULL;
     ARGV_t langs = NULL;
     rpmExpandMacros(NULL, "%{__requires_filter}", &val1, 0);
 
     if (val1 && *val1 != '%') {
-      printf("teste: %s\n", val1);
+      //      printf("teste: %s\n", val1);
       argvSplit(&langs, val1, ":");
-      /* If we'll be installing all languages anyway, don't bother */
       for (ARGV_t l = langs; *l; l++) {
-        printf("regex: %s\n", *l);
+        //        printf("regex: %s\n", *l);
+        regexList = compRegex(*l);
       }
       val1 = _free(val1);
       langs = argvFree(langs);
     }
 
-    for (int i = 1;; ++i) {
-      char *macro = NULL;
-      rasprintf(&macro, "%%__requires_exclude%d", i);
-      // fprintf(stdout, "%s\n", macro);
-      char *val = NULL;
-      rpmExpandMacros(NULL, macro, &val, 0);
-      // fprintf(stdout, "%s\n", val);
-      if (strcmp(macro, val) != 0) {
-        //        fprintf(stdout, "%s\n", val);
-        //                regexList = compRegex(val, regexList, &regexListSize);
-        regexList = compRegex(val);
-        val = _free(val);
-        macro = _free(macro);
+    //    for (int i = 1;; ++i) {
+    //      char *macro = NULL;
+    //      rasprintf(&macro, "%%__requires_exclude%d", i);
+    //      // fprintf(stdout, "%s\n", macro);
+    //      char *val = NULL;
+    //      rpmExpandMacros(NULL, macro, &val, 0);
+    //      // fprintf(stdout, "%s\n", val);
+    //      if (strcmp(macro, val) != 0) {
+    //        //        fprintf(stdout, "%s\n", val);
+    //        //                regexList = compRegex(val, regexList,
+    //        &regexListSize); regexList = compRegex(val); val = _free(val);
+    //        macro = _free(macro);
 
-      } else {
-        val = _free(val);
-        macro = _free(macro);
-        break;
-      }
-    }
+    //      } else {
+    //        val = _free(val);
+    //        macro = _free(macro);
+    //        break;
+    //      }
+    //    }
   }
 
   if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
@@ -446,7 +440,7 @@ static int processFile(const char *fn, int dtype) {
       ei->soname = rstrdup(bn ? bn + 1 : fn);
     }
     if (ei->soname)
-      addDep(&ei->provides, ei->soname, NULL, ei->marker);
+      addDep(&ei->provides, ei->soname, NULL, ei->marker, 0);
   }
 
   /* If requested and present, add dep for interpreter (ie dynamic linker) */
